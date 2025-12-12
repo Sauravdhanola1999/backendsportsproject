@@ -9,8 +9,15 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    dialect: "mysql",
+    port: process.env.DB_PORT,   
+    dialect: process.env.DB_DIALECT || "mysql",
     logging: false,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
   }
 );
 
@@ -19,7 +26,7 @@ export const connectDB = async () => {
     await sequelize.authenticate();
     console.log("✓ Database connected successfully");
   } catch (error) {
-    console.error("✗ DB Connection Failed:", error.message);
+    console.error("✗ DB Connection Failed:", error);
   }
 };
 
