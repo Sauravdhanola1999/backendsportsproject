@@ -6,10 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "migrate": "node sequelize-esm db:migrate",
-    "migrate:undo": "node sequelize-esm db:migrate:undo",
-    "seed": "node sequelize-esm db:seed:all",
-    "seed:undo": "node sequelize-esm db:seed:undo:all"
+    "migrate": "node --experimental-modules node_modules/sequelize-cli/lib/sequelize db:migrate"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
