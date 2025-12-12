@@ -14,15 +14,11 @@ export function initSocket(server) {
   if (io) return io; // Prevent re-initialization
 
   io = new Server(server, {
-  cors: {
-    origin: "*", // change to frontend URL before production
-    methods: ["GET", "POST"],
-  },
-  path: "/socket.io",        // 🔥 REQUIRED
-  allowEIO3: true,           // 🔥 Fix polling fallback issue
-  transports: ["websocket"], // 🔥 Force WebSocket only
-});
-
+    cors: {
+      origin: "*", // Change to your frontend URL in production
+      methods: ["GET", "POST"],
+    },
+  });
 
   // Middleware: JWT authentication (optional)
   io.use((socket, next) => {
