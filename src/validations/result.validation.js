@@ -1,0 +1,47 @@
+import { body } from "express-validator";
+
+export const createResultValidation = [
+  body("heatId").isInt().withMessage("Heat ID is required"),
+  body("athleteId").isInt().withMessage("Athlete ID is required"),
+  
+  body("lane")
+    .isInt({ min: 1, max: 10 })
+    .withMessage("Lane must be between 1 and 10"),
+
+  body("reactionTime")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Reaction time must be >= 0"),
+
+  body("finishTime")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Finish time must be >= 0"),
+
+  body("status")
+    .isIn(["OK", "DNS", "DNF", "DSQ"])
+    .withMessage("Invalid status"),
+];
+
+export const updateResultValidation = [
+  body("lane")
+    .optional()
+    .isInt({ min: 1, max: 10 })
+    .withMessage("Lane must be between 1 and 10"),
+
+  body("reactionTime")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Reaction time must be >= 0"),
+
+  body("finishTime")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Finish time must be >= 0"),
+
+  body("status")
+    .optional()
+    .isIn(["OK", "DNS", "DNF", "DSQ"])
+    .withMessage("Invalid status"),
+];
+

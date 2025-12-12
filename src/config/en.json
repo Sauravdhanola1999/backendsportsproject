@@ -1,0 +1,57 @@
+{
+  "USER": {
+    "FETCH_SUCCESS": "All users fetched successfully",
+    "FETCH_FAILED": "Failed to fetch users",
+    "CREATE_SUCCESS": "User created successfully",
+    "CREATE_FAILED": "Failed to create user"
+  },
+  "COMMON": {
+    "SERVER_ERROR": "Internal server error",
+    "NOT_FOUND": "Resource not found"
+  },
+  "ATHLETE": {
+    "CREATED": "Athlete created successfully.",
+    "UPDATED": "Athlete updated successfully.",
+    "DELETED": "Athlete deleted successfully.",
+    "FETCHED": "Athlete fetched successfully.",
+    "LIST_FETCHED": "Athletes fetched successfully.",
+    "NOT_FOUND": "Athlete not found.",
+    "ALREADY_EXISTS": "Athlete already exists."
+  },
+  "EVENT": {
+    "CREATED": "Event created successfully.",
+    "UPDATED": "Event updated successfully.",
+    "DELETED": "Event deleted successfully.",
+    "FETCHED": "Event fetched successfully.",
+    "LIST_FETCHED": "Events fetched successfully.",
+    "DETAILS_FETCHED": "Event details fetched successfully.",
+    "NOT_FOUND": "Event not found.",
+    "ALREADY_EXISTS": "Event already exists."
+  },
+  "HEAT": {
+    "CREATED": "Heat created successfully.",
+    "UPDATED": "Heat updated successfully.",
+    "DELETED": "Heat deleted successfully.",
+    "FETCHED": "Heat fetched successfully.",
+    "LIST_FETCHED": "Heats fetched successfully.",
+    "BY_EVENT_FETCHED": "Heats for event fetched successfully.",
+    "NOT_FOUND": "Heat not found.",
+    "ALREADY_EXISTS": "Heat already exists."
+  },
+  "RESULT": {
+  "CREATED": "Result added successfully.",
+  "UPDATED": "Result updated successfully.",
+  "DELETED": "Result deleted successfully.",
+  "FETCHED": "Result fetched successfully.",
+  "LIST_FETCHED": "Results fetched successfully.",
+  "BY_HEAT_FETCHED": "Results for heat fetched successfully.",
+  "LEADERBOARD_FETCHED": "Leaderboard fetched successfully.",
+  "NOT_FOUND": "Result not found.",
+  "HEAT_NOT_FOUND": "Associated heat not found.",
+  "ATHLETE_NOT_FOUND": "Associated athlete not found.",
+  "INVALID_TIME": "Finish time or reaction time is invalid.",
+  "DUPLICATE_LANE": "Lane number is already assigned in this heat.",
+  "ALREADY_EXISTS": "Result already exists for this athlete in this heat."
+}
+
+}
