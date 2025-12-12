@@ -5,3 +5,4 @@ export const createEventValidation = [
   body("category").notEmpty().withMessage("Category is required"),
   body("distance").isInt({ min: 50 }).withMessage("Distance must be >= 50m"),
 ];
+ 
