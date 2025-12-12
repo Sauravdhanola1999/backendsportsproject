@@ -8,6 +8,10 @@ class UserRepository {
   findByEmail(email) {
     return db.User.findOne({ where: { email } });
   }
+
+  findById(id) {
+    return db.User.findByPk(id);
+  }
 }
 
 export default new UserRepository();
