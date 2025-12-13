@@ -14,6 +14,13 @@ class ResultRepository {
     });
   }
 
+  async findByHeatAndAthlete(heatId, athleteId) {
+  return db.Result.findOne({
+    where: { heatId, athleteId }
+  });
+}
+
+
   updateResult(id, data) {
     return db.Result.update(data, { where: { id } });
   }

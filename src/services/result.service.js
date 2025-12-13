@@ -8,21 +8,34 @@ import db from "../models/index.js";
 class ResultService {
 
   async createResult(data) {
-    const heat = await heatRepository.findById(data.heatId);
-    if (!heat) throw new ApiError("HEAT.NOT_FOUND", 404);
+  const heat = await heatRepository.findById(data.heatId);
+  if (!heat) throw new ApiError("HEAT.NOT_FOUND", 404);
 
-    const athlete = await db.Athlete.findByPk(data.athleteId);
-    if (!athlete) throw new ApiError("ATHLETE.NOT_FOUND", 404);
+  const athlete = await db.Athlete.findByPk(data.athleteId);
+  if (!athlete) throw new ApiError("ATHLETE.NOT_FOUND", 404);
 
-    const created = await resultRepository.createResult(data);
+  // 🔑 FIND EXISTING RESULT
+  let result = await resultRepository.findByHeatAndAthlete(
+    data.heatId,
+    data.athleteId
+  );
 
-    const eventId = heat.eventId;
-    const leaderboard = await this.getLeaderboard(eventId);
-
-    emitLeaderboardDebounced(eventId, leaderboard);
-
-    return created;
+  if (result) {
+    // 🔁 UPDATE
+    await resultRepository.updateResult(result.id, data);
+  } else {
+    // ➕ CREATE (only once)
+    result = await resultRepository.createResult(data);
   }
+
+  const leaderboard = await this.getLeaderboard(heat.eventId);
+
+  // 🔥 Emit ONLY updated result (not full list)
+  emitLeaderboardDebounced(heat.eventId, leaderboard);
+
+  return result;
+}
+
 
   async updateResult(id, data) {
     const result = await resultRepository.findById(id);
