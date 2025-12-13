@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-import resultService from "../services/result.service";
-// import leaderboardService from "../services/leaderboard.service.js";
+import resultService from "../services/result.service.js";
 
 let io = null;
 
@@ -84,10 +83,9 @@ export function getIO() {
  * Debounced emission to avoid spamming clients when many results update at once.
  */
 export function emitLeaderboardDebounced(eventId, payload, delay = 200) {
-  const room = `leaderboard:${eventId}`;
+  const room = `leaderboard:${String(eventId)}`; // ✅ FIX
   const key = room;
 
-  // Clear previous debounce timer for this room
   if (debounceMap.has(key)) {
     clearTimeout(debounceMap.get(key));
   }
@@ -95,7 +93,7 @@ export function emitLeaderboardDebounced(eventId, payload, delay = 200) {
   const timer = setTimeout(() => {
     try {
       getIO().to(room).emit("leaderboard:update", payload);
-      console.log(`Emitted leaderboard update to ${room}`);
+      console.log(`📤 Emitted leaderboard update to ${room}`);
     } catch (err) {
       console.error("Failed to emit leaderboard update:", err);
     }
@@ -104,3 +102,4 @@ export function emitLeaderboardDebounced(eventId, payload, delay = 200) {
 
   debounceMap.set(key, timer);
 }
+
