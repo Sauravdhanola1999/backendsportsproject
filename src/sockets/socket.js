@@ -22,23 +22,20 @@ export function initSocket(server) {
 
   // Middleware: JWT authentication (optional)
   io.use((socket, next) => {
-    const token = socket.handshake.auth?.token;
+  const token = socket.handshake.auth?.token;
 
-    // If no auth needed → uncomment next()
-    // return next();
+  // public viewers → allow
+  if (!token) return next();
 
-    if (!token) {
-      return next(new Error("Auth token missing"));
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev-secret");
+    socket.user = decoded;
+    next();
+  } catch (err) {
+    return next(new Error("Invalid token"));
+  }
+});
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev-secret");
-      socket.user = decoded; // attach user info
-      return next();
-    } catch (err) {
-      return next(new Error("Invalid token"));
-    }
-  });
 
   // Connection handler
   io.on("connection", (socket) => {
