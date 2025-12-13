@@ -1,6 +1,7 @@
-// src/sockets/socket.js
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
+import resultService from "../services/result.service";
+// import leaderboardService from "../services/leaderboard.service.js";
 
 let io = null;
 
@@ -39,27 +40,33 @@ export function initSocket(server) {
 
   // Connection handler
   io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
+  console.log("Client connected:", socket.id);
 
-    // Join event leaderboard room
-    socket.on("joinLeaderboard", ({ eventId }) => {
-      if (!eventId) return;
-      const room = `leaderboard:${eventId}`;
-      socket.join(room);
-      console.log(`Client ${socket.id} joined room ${room}`);
-    });
+  socket.on("joinLeaderboard", async ({ eventId }) => {
+    if (!eventId) return;
 
-    // Leave leaderboard room
-    socket.on("leaveLeaderboard", ({ eventId }) => {
-      if (!eventId) return;
-      const room = `leaderboard:${eventId}`;
-      socket.leave(room);
-    });
+    const room = `leaderboard:${String(eventId)}`;
+    socket.join(room);
 
-    socket.on("disconnect", () => {
-      console.log("Client disconnected:", socket.id);
-    });
+    console.log(`Client ${socket.id} joined ${room}`);
+
+    try {
+
+      const leaderboard = await resultService.getLeaderboard(eventId);
+
+      // 🔥 emit ONLY array
+      socket.emit("leaderboard:update", leaderboard);
+    } catch (err) {
+      console.error("Socket leaderboard error:", err);
+    }
   });
+
+  socket.on("leaveLeaderboard", ({ eventId }) => {
+    if (!eventId) return;
+    socket.leave(`leaderboard:${String(eventId)}`);
+  });
+});
+
 
   console.log("Socket.IO initialized");
   return io;
