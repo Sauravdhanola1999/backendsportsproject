@@ -1,7 +1,7 @@
 import express from "express";
 import heatController from "../controllers/heat.controller.js";
 import { validate } from "../middleware/validate.js";
-import { createHeatValidation } from "../validations/heat.validation.js";
+import { createHeatValidation, updateHeatValidation } from "../validations/heat.validation.js";
 import { adminOnly } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.post("/", adminOnly, createHeatValidation, validate, heatController.creat
 router.get("/", heatController.getAll);
 router.get("/:id", heatController.getById);
 router.get("/event/:eventId", heatController.getByEvent);
+router.put("/:id", adminOnly, updateHeatValidation, validate, heatController.update);
 router.delete("/:id", adminOnly, heatController.delete);
 
 export default router;

@@ -14,6 +14,11 @@ class HeatController {
     return new ApiResponse(true, "HEAT.LIST_FETCHED", heats).send(res);
   }
 
+  async update(req, res) {
+    const heat = await heatService.update(req.params.id, req.body);
+    return new ApiResponse(true, "HEAT.UPDATED", heat).send(res);
+  }
+
   async getById(req, res) {
     const heat = await heatService.findById(req.params.id);
     return new ApiResponse(true, "HEAT.FETCHED", heat).send(res);

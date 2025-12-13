@@ -18,6 +18,11 @@ class HeatRepository {
     });
   }
 
+   async update(id, data) {
+    await db.Heat.update(data, { where: { id } });
+    return this.findById(id); // return updated heat with relations
+  }
+
   async findById(id) {
     return db.Heat.findByPk(id, {
       include: [
