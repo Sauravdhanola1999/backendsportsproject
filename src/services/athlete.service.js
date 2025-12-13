@@ -9,7 +9,7 @@ class AthleteService {
   findAll() {
     return db.Athlete.findAll({
       where: { isDeleted: false },
-      attributes: ["id", "name", "country"],
+      attributes: ["id", "name", "country", "age", "gender"],
     });
   }
 
@@ -19,7 +19,7 @@ class AthleteService {
         id,
         isDeleted: false,
       },
-      attributes: ["id", "name", "country"],
+      attributes: ["id", "name", "country", "age", "gender"],
     });
   }
 
