@@ -1,7 +1,4 @@
 import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -9,24 +6,31 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,   
-    dialect: process.env.DB_DIALECT || "mysql",
+    port: Number(process.env.DB_PORT) || 3306,
+    dialect: "mysql",
+
     logging: false,
+
     pool: {
       max: 5,
       min: 0,
       acquire: 30000,
-      idle: 10000
-    }
+      idle: 10000,
+    },
+
+    dialectOptions: {
+      connectTimeout: 60000, // 🔑 VERY IMPORTANT FOR RENDER
+    },
   }
 );
 
 export const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✓ Database connected successfully");
+    console.log("✅ Database connected successfully");
   } catch (error) {
-    console.error("✗ DB Connection Failed:", error);
+    console.error("❌ DB Connection Failed:", error.message);
+    process.exit(1); // stop server if DB fails
   }
 };
 
