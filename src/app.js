@@ -28,6 +28,21 @@ app.use(
 );
 
 app.use(express.json());
+
+// Swagger API Documentation (optional - only loads if packages are installed)
+(async () => {
+  try {
+    const { swaggerUi, swaggerDocument } = await import("./config/swagger.js");
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'Dhakkan API Documentation'
+    }));
+    console.log('✅ Swagger UI available at /api-docs');
+  } catch (error) {
+    console.log('ℹ️  Swagger UI not available. Run "npm install" to enable it.');
+  }
+})();
+
 app.use("/api", routes);
 app.use(errorHandler);
 

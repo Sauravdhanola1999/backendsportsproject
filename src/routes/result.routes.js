@@ -12,6 +12,7 @@ const router = express.Router();
 router.post("/", adminOnly, createResultValidation, validate, resultController.create);
 router.get("/heat/:heatId", resultController.getHeatResults);
 router.put("/:id", adminOnly, updateResultValidation, validate, resultController.update);
+router.put("/event/:eventId/heat/:heatId/athlete/:athleteId", adminOnly, updateResultValidation, validate, resultController.updateByEventHeatAndAthlete);
 router.get("/leaderboard/:eventId", resultController.leaderboard);
 
 export default router;

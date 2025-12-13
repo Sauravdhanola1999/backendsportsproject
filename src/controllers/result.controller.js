@@ -39,6 +39,21 @@ class ResultController {
       return new ApiError(error.message, error.statusCode || 500).send(res);
     }
   }
+
+  async updateByEventHeatAndAthlete(req, res) {
+    try {
+      const { eventId, heatId, athleteId } = req.params;
+      const updated = await resultService.updateResultByEventHeatAndAthlete(
+        parseInt(eventId),
+        parseInt(heatId),
+        parseInt(athleteId),
+        req.body
+      );
+      return new ApiResponse(true, "RESULT.UPDATED", updated, 200).send(res);
+    } catch (error) {
+      return new ApiError(error.message, error.statusCode || 500).send(res);
+    }
+  }
 }
 
 export default new ResultController();

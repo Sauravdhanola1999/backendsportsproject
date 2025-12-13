@@ -59,6 +59,44 @@ class ResultService {
     const results = await resultRepository.getLeaderBoard(eventId);
     return autoRank(results);
   }
+
+  async updateResultByEventHeatAndAthlete(eventId, heatId, athleteId, data) {
+    // Validate heat belongs to event
+    const heat = await heatRepository.findById(heatId);
+    if (!heat) {
+      throw new ApiError("HEAT.NOT_FOUND", 404);
+    }
+    if (heat.eventId !== parseInt(eventId)) {
+      throw new ApiError("HEAT.DOES_NOT_BELONG_TO_EVENT", 400);
+    }
+
+    // Validate athlete exists
+    const athlete = await db.Athlete.findByPk(athleteId);
+    if (!athlete) {
+      throw new ApiError("ATHLETE.NOT_FOUND", 404);
+    }
+
+    // Update or create result
+    let result = await resultRepository.findByEventHeatAndAthlete(eventId, heatId, athleteId);
+    
+    if (result) {
+      // Update existing result
+      await resultRepository.updateByEventHeatAndAthlete(eventId, heatId, athleteId, data);
+      result = await resultRepository.findByEventHeatAndAthlete(eventId, heatId, athleteId);
+    } else {
+      // Create new result if it doesn't exist
+      result = await resultRepository.createResult({
+        athleteId,
+        heatId,
+        ...data
+      });
+    }
+
+    const leaderboard = await this.getLeaderboard(eventId);
+    emitLeaderboardDebounced(eventId, leaderboard);
+
+    return result;
+  }
 }
 
 export default new ResultService();

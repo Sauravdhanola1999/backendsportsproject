@@ -27,7 +27,7 @@ class HeatService {
   async findById(id) {
     const heat = await heatRepository.findById(id);
     if (!heat) {
-      return new ApiError("HEAT.NOT_FOUND", 404);
+      throw new ApiError("HEAT.NOT_FOUND", 404);
     }
     return heat;
   }

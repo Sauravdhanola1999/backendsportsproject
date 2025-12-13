@@ -38,6 +38,30 @@ class ResultRepository {
       order: [["finishTime", "ASC"]],
     });
   }
+
+  async findByEventHeatAndAthlete(eventId, heatId, athleteId) {
+    return db.Result.findOne({
+      where: { heatId, athleteId },
+      include: [
+        {
+          model: db.Heat,
+          where: { eventId },
+          attributes: ["id", "eventId", "heatNumber", "round"]
+        }
+      ]
+    });
+  }
+
+  async updateByEventHeatAndAthlete(eventId, heatId, athleteId, data) {
+    const result = await this.findByEventHeatAndAthlete(eventId, heatId, athleteId);
+    if (!result) {
+      return null;
+    }
+    await db.Result.update(data, {
+      where: { id: result.id }
+    });
+    return db.Result.findByPk(result.id);
+  }
 }
 
 export default new ResultRepository();

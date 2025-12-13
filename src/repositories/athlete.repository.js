@@ -48,7 +48,15 @@ class AthleteRepository {
   async update(id, data) {
     await db.Athlete.update(data, { where: { id } });
     return db.Athlete.findByPk(id, {
-      attributes: ["id", "name", "country", "age"],
+      attributes: [
+        "id",
+        "name",
+        "country",
+        "age",
+        "gender",
+        "personalBest",
+        "seasonBest",
+      ],
     });
   }
 

@@ -5,6 +5,7 @@ export const createResultValidation = [
   body("athleteId").isInt().withMessage("Athlete ID is required"),
   
   body("lane")
+    .optional()
     .isInt({ min: 1, max: 10 })
     .withMessage("Lane must be between 1 and 10"),
 
@@ -19,8 +20,14 @@ export const createResultValidation = [
     .withMessage("Finish time must be >= 0"),
 
   body("status")
+    .optional()
     .isIn(["OK", "DNS", "DNF", "DSQ"])
     .withMessage("Invalid status"),
+  
+  body("position")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Position must be a positive integer"),
 ];
 
 export const updateResultValidation = [
@@ -43,5 +50,10 @@ export const updateResultValidation = [
     .optional()
     .isIn(["OK", "DNS", "DNF", "DSQ"])
     .withMessage("Invalid status"),
+  
+  body("position")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Position must be a positive integer"),
 ];
 
