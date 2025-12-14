@@ -6,7 +6,7 @@ import { errorHandler } from "./middleware/error.middleware.js";
 const app = express();
 
 const allowedOrigins = [
-  "https://racemaster360.vercel.app",
+  "https://racemaster.vercel.app",
   "http://localhost:5173", // for local dev
 ];
 
