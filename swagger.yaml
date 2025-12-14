@@ -1,0 +1,1261 @@
+openapi: 3.0.3
+info:
+  title: Dhakkan API
+  description: |
+    Complete API documentation for Dhakkan - Sports Event Management System.
+    
+    This API provides endpoints for managing athletes, events, heats, and results.
+    All mutation endpoints require authentication via Bearer JWT token.
+  version: 1.0.0
+  contact:
+    name: Dhakkan API Support
+    email: support@dhakkan.com
+
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+  - url: https://your-production-url.com/api
+    description: Production server (update with your actual production URL)
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Athletes
+    description: Athlete management endpoints
+  - name: Events
+    description: Event management endpoints
+  - name: Heats
+    description: Heat management endpoints
+  - name: Results
+    description: Result management endpoints
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from signin endpoint
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+        statusCode:
+          type: integer
+
+    ApiError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        statusCode:
+          type: integer
+
+    AuthRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        password:
+          type: string
+          format: password
+          example: admin123
+
+    SignupRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Admin User
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        password:
+          type: string
+          format: password
+          example: admin123
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+              example: admin
+        token:
+          type: string
+          description: JWT token for authentication
+
+    Athlete:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        country:
+          type: string
+        age:
+          type: integer
+          minimum: 10
+          maximum: 60
+        gender:
+          type: string
+          enum: [M, F, O]
+        personalBest:
+          type: number
+          format: float
+        seasonBest:
+          type: number
+          format: float
+
+    CreateAthleteRequest:
+      type: object
+      required:
+        - name
+        - country
+        - age
+        - gender
+        - eventId
+        - heatId
+      properties:
+        name:
+          type: string
+          example: John Doe
+        country:
+          type: string
+          example: USA
+        age:
+          type: integer
+          minimum: 10
+          maximum: 60
+          example: 25
+        gender:
+          type: string
+          enum: [M, F, O]
+          example: M
+        personalBest:
+          type: number
+          format: float
+          minimum: 0
+          example: 10.5
+        seasonBest:
+          type: number
+          format: float
+          minimum: 0
+          example: 10.8
+        eventId:
+          type: integer
+          minimum: 1
+          example: 1
+          description: Event ID to assign athlete to
+        heatId:
+          type: integer
+          minimum: 1
+          example: 1
+          description: Heat ID to assign athlete to
+        lane:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 3
+          description: Lane number (optional)
+
+    UpdateAthleteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe Updated
+        country:
+          type: string
+          example: USA
+        age:
+          type: integer
+          minimum: 10
+          maximum: 60
+          example: 26
+        gender:
+          type: string
+          enum: [M, F, O]
+          example: M
+        personalBest:
+          type: number
+          format: float
+          minimum: 0
+          example: 10.3
+        seasonBest:
+          type: number
+          format: float
+          minimum: 0
+          example: 10.6
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventName:
+          type: string
+        category:
+          type: string
+        distance:
+          type: integer
+          minimum: 50
+
+    CreateEventRequest:
+      type: object
+      required:
+        - eventName
+        - category
+        - distance
+      properties:
+        eventName:
+          type: string
+          example: 100m Sprint
+        category:
+          type: string
+          example: Track
+        distance:
+          type: integer
+          minimum: 50
+          example: 100
+
+    UpdateEventRequest:
+      type: object
+      properties:
+        eventName:
+          type: string
+          example: 100m Sprint Updated
+        category:
+          type: string
+          example: Track
+        distance:
+          type: integer
+          minimum: 50
+          example: 100
+
+    Heat:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        heatNumber:
+          type: integer
+          minimum: 1
+        round:
+          type: string
+          enum: [HEAT, SEMI, FINAL]
+
+    CreateHeatRequest:
+      type: object
+      required:
+        - eventId
+        - heatNumber
+        - round
+      properties:
+        eventId:
+          type: integer
+          example: 1
+        heatNumber:
+          type: integer
+          minimum: 1
+          example: 1
+        round:
+          type: string
+          enum: [HEAT, SEMI, FINAL]
+          example: HEAT
+
+    UpdateHeatRequest:
+      type: object
+      properties:
+        eventId:
+          type: integer
+          example: 1
+        heatNumber:
+          type: integer
+          minimum: 1
+          example: 2
+        round:
+          type: string
+          enum: [HEAT, SEMI, FINAL]
+          example: SEMI
+
+    Result:
+      type: object
+      properties:
+        id:
+          type: integer
+        heatId:
+          type: integer
+        athleteId:
+          type: integer
+        lane:
+          type: integer
+          minimum: 1
+          maximum: 10
+        reactionTime:
+          type: number
+          format: float
+          minimum: 0
+        finishTime:
+          type: number
+          format: float
+          minimum: 0
+        status:
+          type: string
+          enum: [OK, DNS, DNF, DSQ]
+          default: OK
+        position:
+          type: integer
+          minimum: 1
+
+    CreateResultRequest:
+      type: object
+      required:
+        - heatId
+        - athleteId
+      properties:
+        heatId:
+          type: integer
+          example: 1
+        athleteId:
+          type: integer
+          example: 1
+        lane:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 3
+        reactionTime:
+          type: number
+          format: float
+          minimum: 0
+          example: 0.15
+        finishTime:
+          type: number
+          format: float
+          minimum: 0
+          example: 10.5
+        status:
+          type: string
+          enum: [OK, DNS, DNF, DSQ]
+          default: OK
+          example: OK
+        position:
+          type: integer
+          minimum: 1
+          example: 1
+
+    UpdateResultRequest:
+      type: object
+      properties:
+        lane:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 3
+        reactionTime:
+          type: number
+          format: float
+          minimum: 0
+          example: 0.13
+        finishTime:
+          type: number
+          format: float
+          minimum: 0
+          example: 10.2
+        status:
+          type: string
+          enum: [OK, DNS, DNF, DSQ]
+          example: OK
+        position:
+          type: integer
+          minimum: 1
+          example: 1
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        athlete:
+          $ref: '#/components/schemas/Athlete'
+        result:
+          $ref: '#/components/schemas/Result'
+        heat:
+          $ref: '#/components/schemas/Heat'
+
+paths:
+  /auth/signup-admin:
+    post:
+      tags:
+        - Authentication
+      summary: Create admin user
+      description: Register a new admin user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: Admin created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request (e.g., email already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/signin-admin:
+    post:
+      tags:
+        - Authentication
+      summary: Admin login
+      description: Login as admin and receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /athletes:
+    get:
+      tags:
+        - Athletes
+      summary: Get all athletes
+      description: Retrieve all non-deleted athletes
+      responses:
+        '200':
+          description: List of athletes
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Athlete'
+
+    post:
+      tags:
+        - Athletes
+      summary: Create athlete
+      description: |
+        Create a new athlete and automatically assign to event and heat.
+        This will also create a Result entry automatically.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAthleteRequest'
+      responses:
+        '201':
+          description: Athlete created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Athlete'
+        '400':
+          description: Bad request (validation error or heat doesn't belong to event)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Heat not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /athletes/{id}:
+    get:
+      tags:
+        - Athletes
+      summary: Get athlete by ID
+      description: Retrieve a specific athlete by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Athlete ID
+      responses:
+        '200':
+          description: Athlete details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Athlete'
+        '404':
+          description: Athlete not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    put:
+      tags:
+        - Athletes
+      summary: Update athlete
+      description: "Update athlete information. Note: eventId and heatId cannot be updated via this endpoint."
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Athlete ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAthleteRequest'
+      responses:
+        '200':
+          description: Athlete updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Athlete'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Athlete not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /athletes/create:
+    post:
+      tags:
+        - Athletes
+      summary: Create athlete (alternative endpoint)
+      description: Same as POST /athletes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAthleteRequest'
+      responses:
+        '201':
+          description: Athlete created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Athlete'
+
+  /athletes/edit/{id}:
+    put:
+      tags:
+        - Athletes
+      summary: Update athlete (alternative endpoint)
+      description: Same as PUT /athletes/{id}
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAthleteRequest'
+      responses:
+        '200':
+          description: Athlete updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Athlete'
+
+  /athletes/soft-delete/{id}:
+    delete:
+      tags:
+        - Athletes
+      summary: Soft delete athlete
+      description: Soft delete an athlete (sets isDeleted flag)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Athlete deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Athlete already deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Athlete not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /events:
+    get:
+      tags:
+        - Events
+      summary: Get all events
+      description: Retrieve all non-deleted events
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Event'
+
+    post:
+      tags:
+        - Events
+      summary: Create event
+      description: Create a new event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        '201':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Event'
+
+  /events/create:
+    post:
+      tags:
+        - Events
+      summary: Create event (alternative endpoint)
+      description: Same as POST /events
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        '201':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Event'
+
+  /events/{id}:
+    get:
+      tags:
+        - Events
+      summary: Get event by ID
+      description: Retrieve a specific event by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Event details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Event'
+
+    put:
+      tags:
+        - Events
+      summary: Update event
+      description: Update event information
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventRequest'
+      responses:
+        '200':
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Event'
+
+  /events/{id}/details:
+    get:
+      tags:
+        - Events
+      summary: Get event details
+      description: Get event with detailed information including heats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Event details with heats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /events/soft-delete/{id}:
+    delete:
+      tags:
+        - Events
+      summary: Soft delete event
+      description: Soft delete an event (sets isDeleted flag)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Event deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /heats:
+    get:
+      tags:
+        - Heats
+      summary: Get all heats
+      description: Retrieve all heats with event information
+      responses:
+        '200':
+          description: List of heats
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Heat'
+
+    post:
+      tags:
+        - Heats
+      summary: Create heat
+      description: Create a new heat for an event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHeatRequest'
+      responses:
+        '201':
+          description: Heat created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Heat'
+
+  /heats/{id}:
+    get:
+      tags:
+        - Heats
+      summary: Get heat by ID
+      description: Retrieve a specific heat by ID with event and results
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Heat details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Heat'
+        '404':
+          description: Heat not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    put:
+      tags:
+        - Heats
+      summary: Update heat
+      description: Update heat information
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHeatRequest'
+      responses:
+        '200':
+          description: Heat updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Heat'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Heat not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    delete:
+      tags:
+        - Heats
+      summary: Delete heat
+      description: Delete a heat (hard delete)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Heat deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Heat not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /heats/event/{eventId}:
+    get:
+      tags:
+        - Heats
+      summary: Get heats by event
+      description: Retrieve all heats for a specific event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of heats for the event
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Heat'
+
+  /results:
+    post:
+      tags:
+        - Results
+      summary: Create or update result
+      description: |
+        Create a new result or update existing one if result already exists for the heat+athlete combination.
+        If result exists, it will be updated; otherwise, a new result will be created.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResultRequest'
+      responses:
+        '201':
+          description: Result created/updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Result'
+
+  /results/{id}:
+    put:
+      tags:
+        - Results
+      summary: Update result by ID
+      description: Update a result by its ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Result ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateResultRequest'
+      responses:
+        '200':
+          description: Result updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Result'
+        '404':
+          description: Result not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /results/heat/{heatId}:
+    get:
+      tags:
+        - Results
+      summary: Get results by heat
+      description: Retrieve all results for a specific heat, ordered by finish time
+      parameters:
+        - name: heatId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of results for the heat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Result'
+
+  /results/event/{eventId}/heat/{heatId}/athlete/{athleteId}:
+    put:
+      tags:
+        - Results
+      summary: Update result by event, heat, and athlete
+      description: |
+        Update a result by event ID, heat ID, and athlete ID.
+        If the result doesn't exist, it will be created.
+        This is useful for updating results when you know the event, heat, and athlete but not the result ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Event ID
+        - name: heatId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Heat ID
+        - name: athleteId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Athlete ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateResultRequest'
+      responses:
+        '200':
+          description: Result updated/created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Result'
+        '400':
+          description: Bad request (e.g., heat doesn't belong to event)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Heat or athlete not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /results/leaderboard/{eventId}:
+    get:
+      tags:
+        - Results
+      summary: Get leaderboard by event
+      description: Get leaderboard for a specific event with rankings
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Leaderboard data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LeaderboardEntry'
+
+
+
