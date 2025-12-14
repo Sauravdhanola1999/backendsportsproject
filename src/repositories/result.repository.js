@@ -1,4 +1,5 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 class ResultRepository {
 
@@ -10,7 +11,13 @@ class ResultRepository {
     return db.Result.findAll({
       where: { heatId },
       include: [db.Athlete],
-      order: [["finishTime", "ASC"]],
+      order: [
+        // Sort by status first (OK results first), then by finishTime
+        // Results with null finishTime will appear last
+        [db.sequelize.literal('CASE WHEN status = "OK" THEN 0 ELSE 1 END'), 'ASC'],
+        [db.sequelize.literal('CASE WHEN finishTime IS NULL THEN 1 ELSE 0 END'), 'ASC'],
+        ["finishTime", "ASC"]
+      ],
     });
   }
 
@@ -31,11 +38,18 @@ class ResultRepository {
 
   getLeaderBoard(eventId) {
     return db.Result.findAll({
+      where: {
+        status: "OK"
+      },
       include: [
         { model: db.Heat, where: { eventId } },
         db.Athlete
       ],
-      order: [["finishTime", "ASC"]],
+      order: [
+        // Results with finishTime first (sorted by time), then results without finishTime
+        [db.sequelize.literal('CASE WHEN finishTime IS NULL THEN 1 ELSE 0 END'), 'ASC'],
+        ["finishTime", "ASC"]
+      ],
     });
   }
 
