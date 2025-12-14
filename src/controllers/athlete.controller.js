@@ -63,6 +63,24 @@ class AthleteController {
       return new ApiError(error.message, error.statusCode || 500).send(res);
     }
   }
+
+  async getByEventAndHeat(req, res) {
+    try {
+      const { eventId, heatId } = req.params;
+      const athletes = await athleteService.findByEventAndHeat(
+        parseInt(eventId),
+        parseInt(heatId)
+      );
+      return new ApiResponse(
+        true,
+        "ATHLETE.BY_EVENT_HEAT_FETCHED",
+        athletes,
+        200
+      ).send(res);
+    } catch (error) {
+      return new ApiError(error.message, error.statusCode || 500).send(res);
+    }
+  }
 }
 
 export default new AthleteController();

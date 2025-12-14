@@ -7,6 +7,7 @@ import { adminOnly } from "../middleware/auth.js";
 const router = express.Router();
 
 router.get("/", athleteController.getAll);
+router.get("/event/:eventId/heat/:heatId", athleteController.getByEventAndHeat);
 router.get("/:id", athleteController.getById);
 router.post("/create", adminOnly, createAthleteValidation, validate, athleteController.create);
 router.put("/edit/:id", adminOnly, updateAthleteValidation, validate, athleteController.update);

@@ -81,6 +81,20 @@ class AthleteService {
     }
     return athleteRepository.delete(id);
   }
+
+  async findByEventAndHeat(eventId, heatId) {
+    // Validate that heat belongs to the event
+    const heat = await heatRepository.findById(heatId);
+    if (!heat) {
+      throw new ApiError("HEAT.NOT_FOUND", 404);
+    }
+    if (heat.eventId !== parseInt(eventId)) {
+      throw new ApiError("HEAT.DOES_NOT_BELONG_TO_EVENT", 400);
+    }
+
+    // Get all athletes assigned to this event and heat
+    return athleteRepository.findByEventAndHeat(eventId, heatId);
+  }
 }
 
 export default new AthleteService();

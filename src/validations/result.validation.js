@@ -14,16 +14,25 @@ export const createResultValidation = [
     .isFloat({ min: 0 })
     .withMessage("Reaction time must be >= 0"),
 
-  body("finishTime")
-    .optional()
-    .isFloat({ min: 0 })
-    .withMessage("Finish time must be >= 0"),
-
   body("status")
     .optional()
     .isIn(["OK", "DNS", "DNF", "DSQ"])
-    .withMessage("Invalid status"),
-  
+    .withMessage("Invalid status")
+    .default("OK"),
+
+  body("finishTime")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Finish time must be >= 0")
+    .custom((value, { req }) => {
+      // If status is OK (or not provided, defaults to OK), finishTime should be provided
+      const status = req.body.status || "OK";
+      if (status === "OK" && (value === undefined || value === null)) {
+        throw new Error("Finish time is required when status is OK");
+      }
+      return true;
+    }),
+
   body("position")
     .optional()
     .isInt({ min: 1 })
@@ -41,15 +50,24 @@ export const updateResultValidation = [
     .isFloat({ min: 0 })
     .withMessage("Reaction time must be >= 0"),
 
-  body("finishTime")
-    .optional()
-    .isFloat({ min: 0 })
-    .withMessage("Finish time must be >= 0"),
-
   body("status")
     .optional()
     .isIn(["OK", "DNS", "DNF", "DSQ"])
     .withMessage("Invalid status"),
+
+  body("finishTime")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Finish time must be >= 0")
+    .custom(async (value, { req }) => {
+      // If status is being updated to OK, finishTime must be provided
+      if (req.body.status === "OK") {
+        if (value === undefined || value === null) {
+          throw new Error("Finish time is required when status is OK");
+        }
+      }
+      return true;
+    }),
   
   body("position")
     .optional()
