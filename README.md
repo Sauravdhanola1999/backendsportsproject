@@ -1,133 +1,391 @@
-# Dhakkan — Backend
+# Dhakkan - Athletics Tournament Management & Live Scoreboard System
 
-Lightweight Node.js + Express backend using Sequelize (MySQL) for a sports/event management app.
+A full-stack athletics tournament management system designed to manage athletes, events, heats, and race results while delivering a real-time live leaderboard experience, similar to professional sports broadcasts.
 
-## Table of contents
-- Project overview
-- Prerequisites
-- Environment variables
-- Install & run
-- Database: migrations & seeders
-- API overview
-- Sockets
-- Folder structure
-- Troubleshooting
+## 📋 Table of Contents
 
-## Project overview
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Database Setup](#database-setup)
+- [Real-Time Features](#real-time-features)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [License](#license)
 
-This repository contains the backend for Dhakkan. It exposes REST endpoints for authentication, athletes, events, heats and results, and uses Socket.IO to broadcast realtime updates.
+## 🎯 Overview
 
-## Prerequisites
+Dhakkan is a comprehensive athletics tournament management system that enables administrators to efficiently manage competitions while providing viewers with real-time updates on race results and leaderboards. The system supports multiple events, heats, and automatic ranking calculations with instant WebSocket-based updates.
 
-- Node.js 18+ and npm
-- MySQL server (or compatible) accessible from the app
-- Optional: `npx` / `sequelize-cli` for migrations and seeders
+### Key Capabilities
 
-## Environment variables
+- **Athlete Management**: Centralized database for managing athlete profiles
+- **Event Organization**: Create and manage athletics events with multiple heats
+- **Results Tracking**: Enter and process race results with automatic ranking
+- **Live Leaderboard**: Real-time scoreboard updates using WebSocket technology
+- **User Authentication**: Secure JWT-based authentication system
 
-Create a `.env` file in the `backend` folder (or set env vars in your environment). Example:
+## ✨ Features
 
+### Admin Features
+
+- ✅ Add and manage athletes with detailed profiles
+- ✅ Create athletics events (e.g., 100m, 200m sprints)
+- ✅ Organize multiple heats per event
+- ✅ Enter official race results (finish time, reaction time)
+- ✅ Automatic ranking and position calculation
+- ✅ Real-time leaderboard updates
+- ✅ Toast notifications for success and error handling
+
+### Viewer/User Features
+
+- ✅ View upcoming and live events
+- ✅ Watch real-time leaderboards
+- ✅ See winner, runner-up, and podium standings
+- ✅ Sports-broadcast-style UI experience
+- ✅ No manual refresh required
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React** - UI library
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - Component library
+- **Socket.IO Client** - Real-time communication
+
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **Sequelize ORM** - Database ORM
+- **Socket.IO** - WebSocket server
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
+- **express-validator** - Input validation
+
+### Database
+- **MySQL** - Relational database (via Sequelize)
+
+## 📁 Project Structure
+
+```
+dhakkan/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # Database, Swagger, and app configuration
+│   │   ├── controllers/     # Request handlers
+│   │   ├── helpers/         # Utility helpers (JWT, file upload, etc.)
+│   │   ├── middleware/      # Custom middleware (auth, validation, error handling)
+│   │   ├── migrations/      # Database migrations
+│   │   ├── models/          # Sequelize models
+│   │   ├── repositories/    # Data access layer
+│   │   ├── routes/          # API route definitions
+│   │   ├── seeders/         # Database seeders
+│   │   ├── services/        # Business logic layer
+│   │   ├── sockets/         # Socket.IO configuration
+│   │   ├── utils/           # Utility functions
+│   │   ├── validations/     # Input validation schemas
+│   │   └── app.js           # Express app setup
+│   ├── server.js            # Application entry point
+│   ├── package.json
+│   └── README.md
+└── README.md                # This file
+```
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher)
+- **npm** (v9 or higher)
+- **MySQL** (v8.0 or higher) or compatible database server
+- **Git** (for cloning the repository)
+
+## 🚀 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd dhakkan
+   ```
+
+2. **Install backend dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+3. **Install frontend dependencies** (if frontend is in a separate directory)
+   ```bash
+   cd ../frontend  # Adjust path as needed
+   npm install
+   ```
+
+## ⚙️ Configuration
+
+### Backend Environment Variables
+
+Create a `.env` file in the `backend` directory with the following variables:
+
+```env
+# Server Configuration
 PORT=5000
+
+# Database Configuration
 DB_NAME=dhakkan_db
 DB_USER=root
 DB_PASSWORD=your_db_password
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DIALECT=mysql
-JWT_SECRET=replace-with-a-secure-secret
 
-Notes:
-- `JWT_SECRET` defaults to a development value in code if not provided — always set this in production.
+# JWT Configuration
+JWT_SECRET=replace-with-a-secure-secret-key
 
-## Install & run
-
-From the `backend` folder:
-
-```bash
-npm install
+# Optional: Environment
+NODE_ENV=development
 ```
 
-- Start in production mode:
+> **⚠️ Important**: Always set a secure `JWT_SECRET` in production. Never commit `.env` files to version control.
+
+## 🏃 Running the Application
+
+### Backend
+
+1. **Navigate to backend directory**
+   ```bash
+   cd backend
+   ```
+
+2. **Run database migrations**
+   ```bash
+   npm run migrate
+   ```
+
+3. **Run seeders (optional)**
+   ```bash
+   npx sequelize-cli db:seed:all --config src/config/sequelize.config.cjs
+   ```
+
+4. **Start the server**
+   
+   Development mode (with auto-reload):
+   ```bash
+   npm run dev
+   ```
+   
+   Production mode:
+   ```bash
+   npm run start
+   ```
+
+   The server will start on `http://localhost:5000` (or the port specified in your `.env` file).
+
+### Frontend
+
+Navigate to the frontend directory and start the development server:
 
 ```bash
-npm run start
+cd frontend  # Adjust path as needed
+npm start
 ```
-- Start in development mode with live reload:
 
-```bash
-npm run dev
+## 📚 API Documentation
+
+### Base URL
+```
+http://localhost:5000/api/v1
 ```
 
-Available npm scripts (from `backend/package.json`):
-- `start` — `node server.js`
-- `dev` — `nodemon server.js`
-- `migrate` — runs Sequelize migrations via the local `sequelize-cli`
+### Authentication Endpoints
 
-## Database: migrations & seeders
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Login and receive JWT token
 
-This project uses Sequelize migrations. Create the database named in `DB_NAME` before running migrations.
+### Resource Endpoints
 
-Run migrations:
+- `GET /athletes` - Get all athletes
+- `POST /athletes` - Create a new athlete
+- `GET /athletes/:id` - Get athlete by ID
+- `PUT /athletes/:id` - Update athlete
+- `DELETE /athletes/:id` - Delete athlete
+
+- `GET /events` - Get all events
+- `POST /events` - Create a new event
+- `GET /events/:id` - Get event by ID
+- `PUT /events/:id` - Update event
+- `DELETE /events/:id` - Delete event
+
+- `GET /heats` - Get all heats
+- `POST /heats` - Create a new heat
+- `GET /heats/:id` - Get heat by ID
+- `PUT /heats/:id` - Update heat
+- `DELETE /heats/:id` - Delete heat
+
+- `GET /results` - Get all results
+- `POST /results` - Create a new result
+- `GET /results/:id` - Get result by ID
+- `PUT /results/:id` - Update result
+- `DELETE /results/:id` - Delete result
+
+### Authentication
+
+Protected endpoints require a Bearer token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+For detailed API documentation, refer to:
+- `backend/swagger.yaml` - OpenAPI specification
+- `backend/postman_collection.md` - Postman collection documentation
+
+## 🗄️ Database Setup
+
+### Creating the Database
+
+1. **Connect to MySQL**
+   ```bash
+   mysql -u root -p
+   ```
+
+2. **Create the database**
+   ```sql
+   CREATE DATABASE dhakkan_db;
+   ```
+
+3. **Exit MySQL**
+   ```sql
+   EXIT;
+   ```
+
+### Running Migrations
 
 ```bash
+cd backend
 npm run migrate
 ```
 
-Run seeders (via sequelize-cli). If you have `sequelize-cli` installed locally (devDependency), use:
+### Running Seeders
 
 ```bash
 npx sequelize-cli db:seed:all --config src/config/sequelize.config.cjs
 ```
 
-To undo the last migration/seed, use the corresponding `sequelize-cli` commands, for example:
+### Rolling Back Migrations
 
 ```bash
 npx sequelize-cli db:migrate:undo --config src/config/sequelize.config.cjs
-npx sequelize-cli db:seed:undo:all --config src/config/sequelize.config.cjs
 ```
 
-## API overview
+## 🔄 Real-Time Features
 
-Base server: `http://localhost:<PORT>` (defaults to 5000)
+The application uses **Socket.IO** for real-time communication:
 
-Main resource groups (HTTP REST):
-- `POST /api/v1/auth/register` — register user
-- `POST /api/v1/auth/login` — login (returns JWT)
-- `GET/POST/PUT/DELETE /api/v1/athletes` — manage athletes
-- `GET/POST/PUT/DELETE /api/v1/events` — manage events
-- `GET/POST/PUT/DELETE /api/v1/heats` — manage heats
-- `GET/POST/PUT/DELETE /api/v1/results` — manage results
+- **Live Leaderboard Updates**: When results are entered, all connected clients receive instant updates
+- **No Manual Refresh**: Viewers see updates automatically without page refresh
+- **WebSocket Connection**: Persistent connection for low-latency updates
 
-Authentication: endpoints that mutate protected resources require a Bearer JWT in `Authorization` header.
+### Socket Events
 
-For detailed request/response shapes, inspect the validation and controller files under `backend/src/validations` and `backend/src/controllers`.
+- Real-time result updates
+- Leaderboard changes
+- Event status changes
 
-## Sockets
+Socket configuration is located in `backend/src/sockets/socket.js`.
 
-Socket.IO is used to broadcast realtime updates. Server socket logic is in `backend/src/sockets/socket.js`.
+## 🏗️ Architecture
 
-## Folder structure (important files)
+### Competition Model
 
-- `server.js` — app entry
-- `src/app.js` — Express app + middleware
-- `src/routes` — route definitions
-- `src/controllers` — controllers for each resource
-- `src/services` — business logic
-- `src/repositories` — DB access layer (Sequelize)
-- `src/models` — Sequelize models
-- `src/migrations` — DB migration scripts
-- `src/seeders` — seed data
-- `src/config` — database and i18n config
-- `src/utils` — helper utilities
+The system follows a hierarchical structure:
 
-## Troubleshooting
+1. **Event** - Represents the type of race (e.g., "100m Sprint - Men")
+2. **Heat** - A smaller group of athletes competing within an event
+3. **Result** - Official race timings for athletes in a heat
+4. **Ranking** - Automatically calculated positions based on finish times
 
-- If migrations fail, ensure your DB server is running and `DB_*` env vars are correct.
-- On `JWT` related errors, ensure `JWT_SECRET` is set consistently between running services.
+### Ranking Logic
 
-## Next steps / Contribution
+- Athletes are ranked based on finish time (fastest = Position 1)
+- Rankings recalculate automatically after result entry
+- Tie-breakers can be extended (e.g., reaction time)
 
-- Add API documentation (Postman collection or OpenAPI) for precise request/response schemas.
-- Add end-to-end tests for major flows (auth, results ranking).
+### Data Flow
 
+```
+Admin enters result → Backend processes ranking → WebSocket broadcast → All clients updated
+```
 
+## 🧪 Available Scripts
+
+### Backend Scripts
+
+- `npm start` - Start the server in production mode
+- `npm run dev` - Start the server in development mode with auto-reload
+- `npm run migrate` - Run database migrations
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Database Connection Failed**
+- Ensure MySQL server is running
+- Verify database credentials in `.env` file
+- Check that the database exists
+
+**JWT Authentication Errors**
+- Ensure `JWT_SECRET` is set in `.env`
+- Verify token is included in Authorization header
+- Check token expiration
+
+**Migration Errors**
+- Ensure database exists before running migrations
+- Check database user has proper permissions
+- Verify Sequelize configuration
+
+**Socket.IO Connection Issues**
+- Ensure backend server is running
+- Check CORS configuration
+- Verify Socket.IO client configuration in frontend
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow existing code style and conventions
+- Write clear commit messages
+- Add tests for new features
+- Update documentation as needed
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Authors
+
+- Project Maintainers
+
+## 🙏 Acknowledgments
+
+- Built with modern web technologies
+- Inspired by professional sports broadcast systems
+
+---
+
+For more detailed information about specific components, refer to:
+- `backend/README.md` - Backend-specific documentation
+- `backend/projectoverview.md` - Detailed project overview
