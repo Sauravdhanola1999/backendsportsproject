@@ -1,4 +1,4 @@
-# Dhakkan - Athletics Tournament Management & Live Scoreboard System
+# Athletics Tournament Management & Live Scoreboard System
 
 A full-stack athletics tournament management system designed to manage athletes, events, heats, and race results while delivering a real-time live leaderboard experience, similar to professional sports broadcasts.
 
@@ -74,7 +74,6 @@ Dhakkan is a comprehensive athletics tournament management system that enables a
 ## 📁 Project Structure
 
 ```
-dhakkan/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # Database, Swagger, and app configuration
@@ -370,10 +369,6 @@ Contributions are welcome! Please follow these steps:
 - Write clear commit messages
 - Add tests for new features
 - Update documentation as needed
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👥 Authors
 
