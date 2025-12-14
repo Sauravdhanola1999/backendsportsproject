@@ -39,7 +39,7 @@ class AthleteService {
   findAll() {
     return db.Athlete.findAll({
       where: { isDeleted: false },
-      attributes: ["id", "name", "country", "age", "gender"],
+      attributes: ["id", "name", "country", "age", "gender", "personalBest", "seasonBest"],
     });
   }
 
